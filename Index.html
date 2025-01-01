@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de mots de passe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="number"], input[type="checkbox"], button {
+            margin: 5px 0;
+        }
+        .password-list {
+            margin-top: 20px;
+        }
+        .password-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Générateur de mots de passe</h1>
+        <form id="password-form">
+            <label for="length">Longueur du mot de passe :</label>
+            <input type="number" id="length" name="length" min="4" max="50" value="20" required>
+            
+            <label>Types de caractères :</label>
+            <label><input type="checkbox" id="uppercase" checked> Majuscules</label>
+            <label><input type="checkbox" id="lowercase" checked> Minuscules</label>
+            <label><input type="checkbox" id="numbers" checked> Chiffres</label>
+            <label><input type="checkbox" id="symbols" checked> Symboles</label>
+            
+            <label for="count">Nombre de mots de passe :</label>
+            <input type="number" id="count" name="count" min="1" max="20" value="10" required>
+            
+            <button type="button" id="generate-btn">Générer</button>
+        </form>
+        <div class="password-list" id="password-list"></div>
+    </div>
+
+    <script>
+        document.getElementById("generate-btn").addEventListener("click", function() {
+            const length = parseInt(document.getElementById("length").value);
+            const count = parseInt(document.getElementById("count").value);
+            const useUppercase = document.getElementById("uppercase").checked;
+            const useLowercase = document.getElementById("lowercase").checked;
+            const useNumbers = document.getElementById("numbers").checked;
+            const useSymbols = document.getElementById("symbols").checked;
+
+            const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const numbers = "0123456789";
+            const symbols = "!@#$%^&*()_+[]{}|;:,.<>?";
+
+            let charset = "";
+            if (useUppercase) charset += uppercase;
+            if (useLowercase) charset += lowercase;
+            if (useNumbers) charset += numbers;
+            if (useSymbols) charset += symbols;
+
+            if (charset === "") {
+                alert("Veuillez sélectionner au moins un type de caractère.");
+                return;
+            }
+
+            function generatePassword() {
+                let password = "";
+                for (let i = 0; i < length; i++) {
+                    const randomIndex = Math.floor(Math.random() * charset.length);
+                    password += charset[randomIndex];
+                }
+                return password;
+            }
+
+            const passwordList = document.getElementById("password-list");
+            passwordList.innerHTML = ""; // Réinitialiser l'affichage
+            for (let i = 0; i < count; i++) {
+                const password = generatePassword();
+                const passwordItem = document.createElement("div");
+                passwordItem.className = "password-item";
+
+                const passwordText = document.createElement("span");
+                passwordText.textContent = password;
+
+                const copyButton = document.createElement("button");
+                copyButton.textContent = "Copier";
+                copyButton.addEventListener("click", function() {
+                    navigator.clipboard.writeText(password)
+                        .then(() => alert("Mot de passe copié !"))
+                        .catch(err => alert("Erreur lors de la copie : " + err));
+                });
+
+                passwordItem.appendChild(passwordText);
+                passwordItem.appendChild(copyButton);
+                passwordList.appendChild(passwordItem);
+            }
+        });
+    </script>
+</body>
+</html>
+
+
